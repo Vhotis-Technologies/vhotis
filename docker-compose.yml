@@ -1,0 +1,61 @@
+services:
+  npm:
+    container_name: npm
+    image: jc21/nginx-proxy-manager:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    depends_on:
+      - npm_db
+    networks:
+      - vhotis_network
+
+  npm_db:
+    image: "jc21/mariadb-aria:latest"
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./mysql:/var/lib/MySQL
+    networks:
+      - vhotis_network
+
+  vhotis_redis:
+    container_name: vhotis_redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./redis/data:/data
+    networks:
+      - vhotis_network
+
+  # Shared staging Redis for client/detailer/support staging stacks.
+  staging_shared_redis:
+    container_name: staging_shared_redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - staging_shared_redis_data:/data
+    networks:
+      vhotis_network:
+        aliases:
+          - staging_shared_redis
+    ports:
+      - "6480:6379"
+
+volumes:
+  staging_shared_redis_data:
+
+networks:
+  vhotis_network:
+    external: true

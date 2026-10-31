@@ -1,0 +1,6 @@
+{
+  "cursor.composer.shouldAutoSaveNonAgent": false,
+  "cursor.agentIdeUnification.enabled": false,
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic"
+}
